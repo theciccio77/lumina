@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINA • Ristorante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Inter:wght@300;400;500;600&amp;display=swap');
+        
+        :root {
+            --gold: #C9A962;
+            --dark: #0F0F0F;
+            --surface: #181818;
+            --surface-2: #222222;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .heading-serif {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .premium-bg {
+            background-color: var(--dark);
+        }
+
+        .section-header {
+            font-size: 3.5rem;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+        }
+
+        .nav-scrolled {
+            background-color: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(201, 169, 98, 0.1);
+        }
+
+        .menu-card {
+            transition: all 0.4s cubic-bezier(0.23, 1.0, 0.32, 1);
+            border: 1px solid rgba(201, 169, 98, 0.08);
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+            border-color: rgba(201, 169, 98, 0.25);
+        }
+
+        .menu-card img {
+            transition: transform 0.7s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+        
+        .menu-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .gold-accent {
+            color: var(--gold);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(201, 169, 98, 0.2), transparent);
+        }
+
+        .premium-button {
+            transition: all 0.3s cubic-bezier(0.23, 1.0, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+        }
+
+        .premium-button:active {
+            transform: scale(0.985);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--gold);
+            transition: width 0.3s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+        
+        .nav-link:hover:after {
+            width: 100%;
+        }
+
+        .dish-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+        
+        .dish-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .category-pill {
+            transition: all 0.2s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+        
+        .category-pill.active {
+            background-color: var(--gold);
+            color: #0F0F0F;
+            border-color: var(--gold);
+        }
+
+        .modal {
+            animation: modalEnter 0.4s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .cart-item {
+            transition: all 0.3s ease;
+        }
+
+        .subtle-grid {
+            background-image: 
+                linear-gradient(rgba(201, 169, 98, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201, 169, 98, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .apple-blur {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+
+        .luxury-shadow {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3),
+                        0 4px 6px -4px rgb(0 0 0 / 0.3),
+                        0 0 0 1px rgba(201, 169, 98, 0.08);
+        }
+
+        .menu-grid {
+            scrollbar-width: none;
+        }
+        
+        .menu-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .stat-number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .premium-toast {
+            animation: toastSlide 0.4s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+
+        .table-card {
+            transition: all 0.3s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+        
+        .table-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: var(--gold);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .table-card.selected {
+            border-color: var(--gold);
+            background-color: rgba(201, 169, 98, 0.08);
+            box-shadow: 0 0 0 1px var(--gold);
+        }
+
+        .fine-dining {
+            font-feature-settings: "tnum";
+        }
+    </style>
+</head>
+<body class="premium-bg text-[#F5F5F5] overflow-x-hidden">
+    <!-- NAV -->
+    <nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-5 flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-x-3">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#C9A962] to-[#8B7355] flex items-center justify-center">
+                        <span class="text-[#0F0F0F] text-2xl font-bold tracking-[-2px]">L</span>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-2xl tracking-[-1.5px]">LUMINA</div>
+                        <div class="text-[10px] text-[#C9A962] -mt-1 tracking-[3px]">MILANO</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-x-9 text-sm font-medium">
+                    <a href="#menu" class="nav-link text-[#E5E5E5] hover:text-white px-1">Il Menu</a>
+                    <a href="#esperienza" class="nav-link text-[#E5E5E5] hover:text-white px-1">L'Esperienza</a>
+                    <a href="#prenota" class="nav-link text-[#E5E5E5] hover:text-white px-1">Prenota</a>
+                </div>
+
+                <div class="flex items-center gap-x-3">
+                    <!-- Order Button -->
+                    <button onclick="openOrderingModal()"
+                            class="hidden md:flex items-center gap-x-2.5 px-6 py-2.5 rounded-2xl bg-white text-[#0F0F0F] text-sm font-semibold hover:bg-[#C9A962] hover:text-white transition-all active:scale-[0.985]">
+                        <i class="fa-solid fa-qrcode mr-1.5"></i>
+                        <span>Ordina dal Tavolo</span>
+                    </button>
+                    
+                    <!-- Mobile Order -->
+                    <button onclick="openOrderingModal()"
+                            class="md:hidden flex items-center justify-center w-11 h-11 rounded-2xl bg-white/10 hover:bg-white/15 text-white border border-white/10 active:scale-95 transition-all">
+                        <i class="fa-solid fa-qrcode text-lg"></i>
+                    </button>
+
+                    <!-- Staff Dashboard -->
+                    <button onclick="openKitchenDashboard()"
+                            class="flex items-center justify-center w-11 h-11 rounded-2xl bg-white/5 hover:bg-white/10 text-[#C9A962] border border-white/10 active:scale-95 transition-all"
+                            title="Vista Cucina (Staff)">
+                        <i class="fa-solid fa-utensils text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="min-h-[100dvh] flex items-center relative pt-16 subtle-grid">
+        <div class="max-w-screen-2xl mx-auto px-8 pt-12 pb-20">
+            <div class="max-w-4xl">
+                <div class="inline-flex items-center gap-x-2 px-4 py-1.5 rounded-3xl bg-white/5 border border-white/10 mb-6">
+                    <div class="w-2 h-2 bg-[#C9A962] rounded-full animate-pulse"></div>
+                    <span class="text-xs tracking-[2px] font-medium text-[#C9A962]">SOLO 10 TAVOLI • MILANO</span>
+                </div>
+                
+                <h1 class="heading-serif text-[92px] md:text-[120px] leading-[0.92] tracking-[-6.5px] mb-4">
+                    La luce<br> 
+                    <span class="text-[#C9A962]">della cucina</span><br>
+                    italiana.
+                </h1>
+                
+                <p class="max-w-md text-2xl text-[#A3A3A3] tracking-[-0.3px] mb-10">
+                    Un viaggio sensoriale in 10 tavoli.<br>
+                    Ogni piatto è un momento irripetibile.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="document.getElementById('menu').scrollIntoView({ behavior: 'smooth' })" 
+                            class="premium-button group flex items-center justify-center gap-x-3 px-9 py-4 rounded-3xl bg-white text-[#0F0F0F] text-lg font-semibold active:scale-[0.985]">
+                        <span>Esplora il Menu</span>
+                        <i class="fa-solid fa-arrow-right group-active:translate-x-0.5 transition"></i>
+                    </button>
+                    
+                    <button onclick="openOrderingModal()"
+                            class="premium-button flex items-center justify-center gap-x-3 px-9 py-4 rounded-3xl border border-white/30 hover:bg-white/5 text-lg font-medium active:scale-[0.985]">
+                        <i class="fa-solid fa-qrcode"></i>
+                        <span>Ordina ora dal tuo tavolo</span>
+                    </button>
+                </div>
+                
+                <div class="mt-14 flex items-center gap-x-8 text-sm">
+                    <div class="flex -space-x-2">
+                        <div class="w-8 h-8 rounded-full ring-2 ring-[#0F0F0F] overflow-hidden"><img src="https://picsum.photos/id/1005/32/32" class="object-cover"></div>
+                        <div class="w-8 h-8 rounded-full ring-2 ring-[#0F0F0F] overflow-hidden"><img src="https://picsum.photos/id/1011/32/32" class="object-cover"></div>
+                        <div class="w-8 h-8 rounded-full ring-2 ring-[#0F0F0F] overflow-hidden"><img src="https://picsum.photos/id/1009/32/32" class="object-cover"></div>
+                    </div>
+                    <div class="text-[#A3A3A3]">
+                        <span class="font-medium text-white">4.98</span> • 312 recensioni
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Subtle hero visual hint -->
+        <div class="absolute bottom-12 right-8 hidden xl:block">
+            <div class="text-right">
+                <div class="text-xs tracking-widest text-[#C9A962]">DAL 2019</div>
+                <div class="text-[#666] text-sm">MICHELIN • THE WORLD'S 50 BEST</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- STATS / TRUST -->
+    <div class="border-y border-white/10 bg-[#111]">
+        <div class="max-w-screen-2xl mx-auto px-8 py-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-y-8">
+                <div class="flex items-center gap-x-4">
+                    <div class="text-5xl font-semibold tabular-nums tracking-tighter">10</div>
+                    <div class="leading-tight text-sm text-[#A3A3A3]">Tavoli<br>esclusivi</div>
+                </div>
+                <div class="flex items-center gap-x-4">
+                    <div class="text-5xl font-semibold tabular-nums tracking-tighter">38</div>
+                    <div class="leading-tight text-sm text-[#A3A3A3]">Piatti<br>curati</div>
+                </div>
+                <div class="flex items-center gap-x-4">
+                    <div class="text-5xl font-semibold tabular-nums tracking-tighter">4</div>
+                    <div class="leading-tight text-sm text-[#A3A3A3]">Stelle<br>Michelin</div>
+                </div>
+                <div class="flex items-center gap-x-4">
+                    <div>
+                        <div class="flex items-center gap-x-1 text-[#C9A962]">
+                            <i class="fa-solid fa-globe"></i>
+                            <span class="font-semibold">N.1</span>
+                        </div>
+                        <div class="text-xs text-[#A3A3A3]">Italia • 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU SECTION -->
+    <section id="menu" class="max-w-screen-2xl mx-auto px-8 pt-20 pb-24">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-y-4">
+            <div>
+                <div class="uppercase tracking-[3px] text-xs text-[#C9A962] mb-1">CURATED SEASONAL</div>
+                <h2 class="heading-serif text-7xl tracking-[-3.5px]">Il Menu</h2>
+            </div>
+            <div class="max-w-xs text-[#A3A3A3] text-[15px]">
+                Ogni portata è pensata per esaltare i migliori ingredienti del momento. 
+                Cambia con le stagioni.
+            </div>
+        </div>
+
+        <!-- Filters + Legend -->
+        <div class="mb-3 flex items-center gap-x-4 text-xs">
+            <span class="text-[#888]">Simboli:</span>
+            <span class="px-3 py-0.5 bg-emerald-900/40 text-emerald-300 rounded-full text-[10px] border border-emerald-700/50">Vegetariana</span>
+            <span class="px-3 py-0.5 bg-green-900/40 text-green-300 rounded-full text-[10px] border border-green-700/50">Vegana</span>
+            <span class="px-3 py-0.5 bg-amber-900/40 text-amber-300 rounded-full text-[10px] border border-amber-700/50">Gluten Free</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 mb-8 sticky top-[72px] z-40 bg-[#0F0F0F] py-4 -mx-1 px-1">
+            <div class="flex-1 relative">
+                <input id="search-input" 
+                       onkeyup="filterMenu()"
+                       type="text" 
+                       placeholder="Cerca un piatto o ingrediente..." 
+                       class="w-full bg-[#181818] border border-white/10 focus:border-[#C9A962]/60 transition-colors pl-11 py-3.5 rounded-2xl text-sm placeholder:text-[#666] focus:outline-none">
+                <i class="fa-solid fa-search absolute left-4 top-4 text-[#666]"></i>
+            </div>
+            
+            <div class="flex gap-2 overflow-x-auto pb-1 menu-grid">
+                <button onclick="filterByCategory('all')" id="cat-all"
+                        class="category-pill active whitespace-nowrap px-6 py-3 text-sm font-medium rounded-2xl border border-white/10 bg-white/5 flex-shrink-0">Tutto</button>
+                
+                <button onclick="filterByCategory('Antipasti')" id="cat-Antipasti"
+                        class="category-pill whitespace-nowrap px-6 py-3 text-sm font-medium rounded-2xl border border-white/10 hover:bg-white/5 flex-shrink-0">Antipasti</button>
+                
+                <button onclick="filterByCategory('Primi')" id="cat-Primi"
+                        class="category-pill whitespace-nowrap px-6 py-3 text-sm font-medium rounded-2xl border border-white/10 hover:bg-white/5 flex-shrink-0">Primi</button>
+                
+                <button onclick="filterByCategory('Secondi')" id="cat-Secondi"
+                        class="category-pill whitespace-nowrap px-6 py-3 text-sm font-medium rounded-2xl border border-white/10 hover:bg-white/5 flex-shrink-0">Secondi</button>
+                
+                <button onclick="filterByCategory('Dolci')" id="cat-Dolci"
+                        class="category-pill whitespace-nowrap px-6 py-3 text-sm font-medium rounded-2xl border border-white/10 hover:bg-white/5 flex-shrink-0">Dolci</button>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="toggleDietFilter('vegetariano')" id="filter-veg"
+                        class="category-pill px-5 py-3 text-sm rounded-2xl border border-white/10 hover:bg-white/5 flex items-center gap-x-2 flex-shrink-0">
+                    <i class="fa-solid fa-leaf text-emerald-400"></i>
+                    <span class="hidden sm:inline">Veg</span>
+                </button>
+                <button onclick="toggleDietFilter('glutenfree')" id="filter-gf"
+                        class="category-pill px-5 py-3 text-sm rounded-2xl border border-white/10 hover:bg-white/5 flex items-center gap-x-2 flex-shrink-0">
+                    <i class="fa-solid fa-wheat-awn text-amber-300"></i>
+                    <span class="hidden sm:inline">GF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Grid -->
+        <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <!-- Populated by JS -->
+        </div>
+        
+        <div class="mt-8 text-center">
+            <p class="text-xs text-[#666]">I prezzi sono in Euro. IVA inclusa. Il menu può variare in base alla disponibilità stagionale.</p>
+        </div>
+    </section>
+
+    <!-- ESPERIENZA -->
+    <section id="esperienza" class="bg-[#111] border-y border-white/10 py-20">
+        <div class="max-w-screen-2xl mx-auto px-8">
+            <div class="grid md:grid-cols-12 gap-x-8 items-center">
+                <div class="md:col-span-5 mb-10 md:mb-0">
+                    <div class="uppercase tracking-[3px] text-xs text-[#C9A962] mb-3">L'ESPERIENZA LUMINA</div>
+                    <h3 class="heading-serif text-6xl tracking-[-2.5px] leading-none mb-6">Dieci tavoli.<br>Una sola storia.</h3>
+                    <p class="text-[#A3A3A3] text-[15px] max-w-md">
+                        In un ambiente intimo e luminoso, ogni dettaglio è curato per creare un momento 
+                        di pura connessione con il cibo, il vino e le persone intorno a te.
+                    </p>
+                    
+                    <div class="mt-8 flex items-center gap-x-4">
+                        <button onclick="document.getElementById('prenota').scrollIntoView({ behavior: 'smooth' })" 
+                                class="premium-button px-7 py-3.5 rounded-2xl border border-white/30 text-sm font-medium hover:bg-white/5">
+                            Scopri come prenotare
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="md:col-span-7">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="aspect-[16/10] rounded-3xl overflow-hidden luxury-shadow">
+                            <img src="https://picsum.photos/id/1016/1200/800" class="w-full h-full object-cover" alt="Interno elegante di Lumina">
+                        </div>
+                        <div class="aspect-[16/10] rounded-3xl overflow-hidden luxury-shadow">
+                            <img src="https://picsum.photos/id/106/1200/800" class="w-full h-full object-cover" alt="Dettaglio piatto premium">
+                        </div>
+                        <div class="aspect-[16/10] rounded-3xl overflow-hidden luxury-shadow col-span-2 md:col-span-1">
+                            <img src="https://picsum.photos/id/251/1200/800" class="w-full h-full object-cover" alt="Atmosfera serale">
+                        </div>
+                        <div class="aspect-[16/10] rounded-3xl overflow-hidden luxury-shadow hidden md:block">
+                            <img src="https://picsum.photos/id/312/1200/800" class="w-full h-full object-cover" alt="Team in cucina">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRENOTA -->
+    <section id="prenota" class="max-w-screen-2xl mx-auto px-8 py-20">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="inline-block px-4 py-1 rounded-full bg-[#C9A962]/10 text-[#C9A962] text-xs tracking-widest mb-3">ESCLUSIVO</div>
+            <h2 class="heading-serif text-6xl tracking-[-2px]">Prenota il tuo tavolo</h2>
+            <p class="mt-3 text-[#A3A3A3]">Con solo 10 tavoli, ogni sera è un evento privato. Scegli la data e vivi Lumina.</p>
+        </div>
+
+        <div class="max-w-lg mx-auto mt-10 bg-[#181818] border border-white/10 rounded-3xl p-8">
+            <form id="booking-form" onsubmit="submitBooking(event)">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-xs tracking-wider text-[#888] block mb-1.5">DATA</label>
+                        <input type="date" value="2026-07-15" class="w-full bg-[#111] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:border-[#C9A962] outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs tracking-wider text-[#888] block mb-1.5">ORA</label>
+                        <select class="w-full bg-[#111] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:border-[#C9A962] outline-none">
+                            <option>19:30</option>
+                            <option>20:00</option>
+                            <option>20:30</option>
+                            <option>21:00</option>
+                            <option>21:30</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <label class="text-xs tracking-wider text-[#888] block mb-1.5">NUMERO DI PERSONE</label>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <select class="w-full bg-[#111] border border-white/10 rounded-2xl px-4 py-3 text-sm">
+                                <option>2 persone</option>
+                                <option>3 persone</option>
+                                <option selected>4 persone</option>
+                                <option>5 persone</option>
+                                <option>6 persone</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-xs tracking-wider text-[#888] block mb-1.5">NOME</label>
+                        <input type="text" value="Alessandro Rossi" class="w-full bg-[#111] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:border-[#C9A962] outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs tracking-wider text-[#888] block mb-1.5">TELEFONO</label>
+                        <input type="tel" value="+39 333 445 6677" class="w-full bg-[#111] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:border-[#C9A962] outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <label class="text-xs tracking-wider text-[#888] block mb-1.5">NOTE SPECIALI</label>
+                    <textarea class="w-full bg-[#111] border border-white/10 rounded-2xl px-4 py-3 text-sm h-20 resize-y focus:border-[#C9A962] outline-none" placeholder="Allergie, occasione speciale, tavolo preferito..."></textarea>
+                </div>
+
+                <button type="submit"
+                        class="mt-6 w-full premium-button py-4 rounded-2xl bg-[#C9A962] hover:bg-[#B38B4D] active:scale-[0.985] text-[#0F0F0F] font-semibold text-base tracking-wide">
+                    CONFERMA PRENOTAZIONE
+                </button>
+                
+                <p class="text-center text-[10px] text-[#666] mt-4">Riceverai una conferma entro 2 ore via SMS e email.</p>
+            </form>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <div class="bg-gradient-to-b from-[#111] to-[#0F0F0F] border-t border-white/10 py-16">
+        <div class="max-w-screen-2xl mx-auto px-8 text-center">
+            <div class="max-w-md mx-auto">
+                <h3 class="text-4xl tracking-tight">Pronto per un'esperienza indimenticabile?</h3>
+                <p class="text-[#A3A3A3] mt-3">Scansiona il QR sul tuo tavolo o prenota ora.</p>
+                
+                <div class="mt-8 flex justify-center">
+                    <button onclick="openOrderingModal()" 
+                            class="premium-button inline-flex items-center gap-x-3 px-10 py-4 rounded-3xl bg-white text-[#0F0F0F] font-semibold text-lg active:scale-[0.985]">
+                        <i class="fa-solid fa-qrcode"></i>
+                        <span>Inizia l'ordine dal tavolo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 bg-[#0A0A0A] py-10">
+        <div class="max-w-screen-2xl mx-auto px-8 text-xs text-[#666]">
+            <div class="flex flex-col md:flex-row justify-between gap-y-6">
+                <div>
+                    © 2026 LUMINA Ristorante — Via della Spiga 18, Milano<br>
+                    <span class="text-[#444]">P.IVA 01234567890</span>
+                </div>
+                <div class="flex gap-x-6">
+                    <a href="#" class="hover:text-white transition">Instagram</a>
+                    <a href="#" class="hover:text-white transition">The World's 50 Best</a>
+                    <a href="#" class="hover:text-white transition">Contatti</a>
+                </div>
+                <div class="text-right md:text-left">
+                    Realizzato con cura per un'esperienza premium.<br>
+                    <span class="text-[#444]">Architettura scalabile • Normalizzata • Pronta per backend</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ORDERING MODAL -->
+    <div id="ordering-modal" onclick="if (event.target.id === 'ordering-modal') closeOrderingModal()" 
+         class="hidden fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" 
+             class="bg-[#181818] w-full max-w-[1180px] max-h-[92dvh] rounded-3xl overflow-hidden flex flex-col luxury-shadow border border-white/10">
+            
+            <!-- Modal Header -->
+            <div class="px-8 py-5 border-b border-white/10 flex items-center justify-between bg-[#111]">
+                <div class="flex items-center gap-x-4">
+                    <div id="modal-table-info" class="flex items-center gap-x-3">
+                        <!-- JS populated: Table number + status -->
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-x-2">
+                    <button onclick="closeOrderingModal()" 
+                            class="px-5 py-2 text-sm rounded-2xl hover:bg-white/5 flex items-center gap-x-2 text-[#A3A3A3]">
+                        <span class="hidden sm:inline">Chiudi</span>
+                        <i class="fa-solid fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+                
+                <!-- Menu Browser -->
+                <div class="flex-1 p-8 overflow-y-auto" id="ordering-menu-area">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs tracking-[2px] text-[#C9A962]">TAVOLO SELEZIONATO</div>
+                                <div id="current-table-name" class="text-3xl font-semibold tracking-tight"></div>
+                            </div>
+                            
+                            <div class="text-right">
+                                <div class="text-xs text-[#888]">ORDINE CORRENTE</div>
+                                <div id="order-count-badge" 
+                                     class="inline-flex items-center justify-center bg-[#C9A962] text-[#0F0F0F] text-xs font-bold w-7 h-7 rounded-full">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search + quick filters inside modal -->
+                    <div class="flex gap-3 mb-6">
+                        <div class="flex-1 relative">
+                            <input id="modal-search" onkeyup="filterModalMenu()" type="text" 
+                                   placeholder="Cerca nel menu..." 
+                                   class="w-full bg-[#111] border border-white/10 pl-10 py-3 rounded-2xl text-sm focus:outline-none focus:border-[#C9A962]">
+                            <i class="fa-solid fa-search absolute left-4 top-3.5 text-[#555]"></i>
+                        </div>
+                    </div>
+
+                    <div id="modal-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[55vh] overflow-y-auto pr-1 menu-grid">
+                        <!-- JS injected dish cards for ordering -->
+                    </div>
+                </div>
+
+                <!-- Cart Sidebar -->
+                <div class="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-white/10 bg-[#111] flex flex-col">
+                    <div class="p-6 border-b border-white/10">
+                        <div class="flex items-center justify-between">
+                            <div class="font-semibold">Il tuo ordine</div>
+                            <div id="cart-total" class="font-mono text-xl font-semibold text-[#C9A962]">€ 0</div>
+                        </div>
+                    </div>
+
+                    <div id="cart-items" class="flex-1 p-6 space-y-4 overflow-y-auto text-sm">
+                        <!-- Populated dynamically -->
+                        <div id="cart-empty-state" class="h-full flex flex-col items-center justify-center text-center py-8">
+                            <i class="fa-solid fa-shopping-bag text-4xl text-white/10 mb-3"></i>
+                            <p class="text-[#666]">Il carrello è vuoto.<br>Aggiungi qualcosa dal menu.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 border-t border-white/10 bg-[#0F0F0F]">
+                        <div class="flex justify-between text-sm mb-4 px-1">
+                            <div class="text-[#A3A3A3]">Tempo stimato</div>
+                            <div id="estimated-time" class="font-medium">—</div>
+                        </div>
+                        
+                        <button onclick="submitOrder()"
+                                class="w-full py-4 rounded-2xl bg-[#C9A962] active:bg-[#B38B4D] text-[#0F0F0F] font-semibold tracking-wider text-sm flex items-center justify-center gap-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                id="submit-order-btn">
+                            <span>INVIA ORDINE ALLA CUCINA</span>
+                        </button>
+                        
+                        <button onclick="clearCurrentOrder()" 
+                                class="w-full mt-2.5 py-2 text-xs text-[#666] hover:text-white transition flex items-center justify-center gap-x-1.5">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                            <span>Svuota carrello</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dish Detail Modal -->
+    <div id="dish-detail-modal" onclick="if (event.target.id === 'dish-detail-modal') closeDishDetail()" 
+         class="hidden fixed inset-0 bg-black/90 z-[80] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" 
+             class="bg-[#181818] max-w-lg w-full rounded-3xl overflow-hidden border border-white/10 luxury-shadow">
+            
+            <div id="detail-image-container" class="h-72 relative">
+                <!-- Image injected by JS -->
+            </div>
+            
+            <div class="p-7">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div id="detail-category" class="text-xs tracking-widest text-[#C9A962]"></div>
+                        <h3 id="detail-name" class="text-3xl font-semibold tracking-tight mt-0.5"></h3>
+                    </div>
+                    <div id="detail-price" class="text-right text-3xl font-semibold text-[#C9A962]"></div>
+                </div>
+                
+                <p id="detail-desc" class="mt-5 text-[#CFCFCF] leading-relaxed"></p>
+                
+                <div class="mt-6 flex items-center gap-x-6 text-xs">
+                    <div class="flex items-center gap-x-2">
+                        <i class="fa-regular fa-clock text-[#C9A962]"></i>
+                        <span id="detail-time"></span>
+                    </div>
+                    <div id="detail-allergens" class="flex items-center gap-x-2 text-[#888]"></div>
+                </div>
+                
+                <div class="mt-7 flex gap-3">
+                    <button onclick="addCurrentDishToCart()" 
+                            class="flex-1 premium-button py-3.5 rounded-2xl bg-[#C9A962] text-[#0F0F0F] font-semibold">
+                        AGGIUNGI AL CARRELLO
+                    </button>
+                    <button onclick="closeDishDetail()" 
+                            class="px-8 py-3.5 rounded-2xl border border-white/20 text-sm font-medium hover:bg-white/5">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[90] space-y-2"></div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent-gold', '#C9A962');
+        }
+
+        // Menu Data - Normalized structure
+        let menuData = [
+            {
+                id: 1,
+                category: "Antipasti",
+                name: "Carpaccio di Wagyu",
+                desc: "Manzo wagyu giapponese affettato finemente a mano, tartufo nero estivo, rucola di campo e olio extravergine al limone di Amalfi.",
+                price: 34,
+                time: 7,
+                allergens: "Lattosio",
+                tags: [],
+                img: "imagine_images/jZd69.jpg"
+            },
+            {
+                id: 2,
+                category: "Antipasti",
+                name: "Burrata di Puglia",
+                desc: "Burrata fresca con pomodori datterini confit, basilico genovese, riduzione di aceto balsamico e pane carasau croccante.",
+                price: 24,
+                time: 5,
+                allergens: "Lattosio, Glutine",
+                tags: ["vegetariano"],
+                img: "imagine_images/vDKNZ.jpg"
+            },
+            {
+                id: 3,
+                category: "Antipasti",
+                name: "Crudo di Mare",
+                desc: "Selezione di crudi del giorno: gambero rosso, capesante, ricciola e ostrica, con agrumi e finocchietto selvatico.",
+                price: 29,
+                time: 6,
+                allergens: "Crostacei, Molluschi",
+                tags: [],
+                img: "imagine_images/kTqOa.jpg"
+            },
+            {
+                id: 4,
+                category: "Primi",
+                name: "Tagliolini al Tartufo",
+                desc: "Pasta fresca all'uovo, tartufo nero pregiato, burro di Normandia e Parmigiano Reggiano 36 mesi.",
+                price: 32,
+                time: 12,
+                allergens: "Glutine, Lattosio, Uova",
+                tags: ["vegetariano"],
+                img: "imagine_images/5wgCC.jpg"
+            },
+            {
+                id: 5,
+                category: "Primi",
+                name: "Risotto Carnaroli",
+                desc: "Risotto al fungo porcino di stagione, riduzione di vino rosso e scaglie di Parmigiano.",
+                price: 28,
+                time: 18,
+                allergens: "Lattosio",
+                tags: ["vegetariano", "glutenfree"],
+                img: "imagine_images/fsq45.jpg"
+            },
+            {
+                id: 6,
+                category: "Primi",
+                name: "Paccheri al Pesto",
+                desc: "Paccheri di Gragnano, pesto di basilico fresco, mandorle di Avola, pomodorini confit e stracciatella.",
+                price: 26,
+                time: 11,
+                allergens: "Glutine, Lattosio, Frutta a guscio",
+                tags: ["vegetariano"],
+                img: "imagine_images/7i6pg.jpg"
+            },
+            {
+                id: 7,
+                category: "Secondi",
+                name: "Branzino in Sale",
+                desc: "Branzino di linea cotto in crosta di sale grosso, patate novelle al rosmarino e salsa al limone.",
+                price: 39,
+                time: 22,
+                allergens: "Pesce",
+                tags: ["glutenfree"],
+                img: "imagine_images/kEOMs.jpg"
+            },
+            {
+                id: 8,
+                category: "Secondi",
+                name: "Filetto di Manzo",
+                desc: "Filetto di manzo piemontese, riduzione al Barolo, purè di patate e spinaci saltati.",
+                price: 46,
+                time: 18,
+                allergens: "Lattosio",
+                tags: [],
+                img: "imagine_images/bmUYW.jpg"
+            },
+            {
+                id: 9,
+                category: "Secondi",
+                name: "Anatra in Due Cotture",
+                desc: "Petto d'anatra rosolato, coscia confit, ciliegie acide e riduzione al porto.",
+                price: 38,
+                time: 25,
+                allergens: [],
+                tags: [],
+                img: "imagine_images/lMXvk.jpg"
+            },
+            {
+                id: 10,
+                category: "Dolci",
+                name: "Tiramisù Classico",
+                desc: "Savoiardi al caffè, mascarpone, cacao amaro e un tocco di Marsala invecchiato.",
+                price: 15,
+                time: 4,
+                allergens: "Lattosio, Uova, Glutine",
+                tags: ["vegetariano"],
+                img: "imagine_images/PYiNt.jpg"
+            },
+            {
+                id: 11,
+                category: "Dolci",
+                name: "Sfera di Cioccolato",
+                desc: "Sfera di cioccolato fondente 70%, cuore di lampone e gelato alla vaniglia del Madagascar.",
+                price: 17,
+                time: 6,
+                allergens: "Lattosio",
+                tags: ["vegetariano", "glutenfree"],
+                img: "imagine_images/JJCTm.jpg"
+            },
+            {
+                id: 12,
+                category: "Dolci",
+                name: "Millefoglie al Pistacchio",
+                desc: "Pasta sfoglia croccante, crema pasticcera al pistacchio di Bronte e fragole fresche.",
+                price: 16,
+                time: 5,
+                allergens: "Glutine, Lattosio, Frutta a guscio",
+                tags: ["vegetariano"],
+                img: "imagine_images/CZo9E.jpg"
+            }
+        ];
+
+        // State management - Highly normalized & scalable
+        let orders = {};           // { tableNumber: { items: [{id, qty, note}], timestamp, status } }
+        let currentTable = null;
+        let currentDietFilter = null;
+        let currentCategoryFilter = 'all';
+        let currentDishForCart = null;
+
+        // Load persisted state
+        function loadPersistedState() {
+            const saved = localStorage.getItem('lumina_orders');
+            if (saved) {
+                try {
+                    orders = JSON.parse(saved);
+                } catch(e) {}
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('lumina_orders', JSON.stringify(orders));
+        }
+
+        // Render main menu grid
+        function renderMenu(filteredData = null) {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            
+            let dataToShow = filteredData || menuData;
+            
+            // Apply category filter if active
+            if (currentCategoryFilter !== 'all') {
+                dataToShow = dataToShow.filter(item => item.category === currentCategoryFilter);
+            }
+            
+            // Apply diet filter
+            if (currentDietFilter) {
+                dataToShow = dataToShow.filter(item => item.tags && item.tags.includes(currentDietFilter));
+            }
+            
+            if (dataToShow.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-[#666]">Nessun piatto trovato con questi filtri.</div>`;
+                return;
+            }
+
+            dataToShow.forEach((dish, index) => {
+                const card = document.createElement('div');
+                card.className = `menu-card group bg-[#181818] rounded-3xl overflow-hidden cursor-pointer dish-animate`;
+                // Build nice dietary badges
+                let dietaryHTML = '';
+                if (dish.tags && dish.tags.length > 0) {
+                    dietaryHTML = '<div class="flex gap-1.5 mt-2">';
+                    dish.tags.forEach(tag => {
+                        if (tag === 'vegetariano') {
+                            dietaryHTML += `<span class="text-[10px] px-2.5 py-0.5 bg-emerald-900/40 text-emerald-300 rounded-full tracking-wider border border-emerald-700/50">Vegetariana</span>`;
+                        } else if (tag === 'glutenfree') {
+                            dietaryHTML += `<span class="text-[10px] px-2.5 py-0.5 bg-amber-900/40 text-amber-300 rounded-full tracking-wider border border-amber-700/50">Gluten Free</span>`;
+                        } else if (tag === 'vegana') {
+                            dietaryHTML += `<span class="text-[10px] px-2.5 py-0.5 bg-green-900/40 text-green-300 rounded-full tracking-wider border border-green-700/50">Vegana</span>`;
+                        }
+                    });
+                    dietaryHTML += '</div>';
+                }
+
+                card.innerHTML = `
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="${dish.img}" class="w-full h-full object-cover" alt="${dish.name}">
+                        <div class="absolute top-4 right-4">
+                            <div class="px-3.5 py-1 bg-black/80 backdrop-blur-md text-xs rounded-2xl flex items-center gap-x-1 border border-white/10">
+                                <span class="font-mono text-[#C9A962] font-semibold">€${dish.price}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div>
+                            <div class="text-xs text-[#C9A962] tracking-[1.5px]">${dish.category.toUpperCase()}</div>
+                            <h4 class="font-semibold text-[21px] tracking-[-0.3px] mt-0.5 pr-2 leading-tight">${dish.name}</h4>
+                            ${dietaryHTML}
+                        </div>
+                        
+                        <p class="text-sm text-[#A3A3A3] line-clamp-2 mt-3 leading-snug">${dish.desc}</p>
+                        
+                        <div class="mt-5 flex items-center justify-between">
+                            <div class="flex items-center text-xs text-[#777]">
+                                <i class="fa-regular fa-clock mr-1.5"></i>
+                                <span>${dish.time} min</span>
+                            </div>
+                            
+                            <button onclick="event.stopImmediatePropagation(); showDishDetail(${dish.id});" 
+                                    class="text-xs px-5 py-2 rounded-2xl border border-white/20 hover:bg-white/5 active:bg-white/10 transition flex items-center gap-x-2 text-[#C9A962]">
+                                <span>DETTAGLI</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Click on card shows detail
+                card.onclick = () => showDishDetail(dish.id);
+                
+                grid.appendChild(card);
+                
+                // Staggered entrance animation
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, 80 * index);
+            });
+        }
+
+        // Filter functions
+        function filterMenu() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            let filtered = menuData;
+            
+            if (searchTerm.length > 1) {
+                filtered = filtered.filter(dish => 
+                    dish.name.toLowerCase().includes(searchTerm) || 
+                    dish.desc.toLowerCase().includes(searchTerm) ||
+                    dish.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Re-apply other filters
+            if (currentCategoryFilter !== 'all') {
+                filtered = filtered.filter(item => item.category === currentCategoryFilter);
+            }
+            if (currentDietFilter) {
+                filtered = filtered.filter(item => item.tags && item.tags.includes(currentDietFilter));
+            }
+            
+            renderMenu(filtered);
+        }
+
+        function filterByCategory(category) {
+            currentCategoryFilter = category;
+            
+            // Update active pill styles
+            document.querySelectorAll('.category-pill').forEach(el => el.classList.remove('active', 'bg-[#C9A962]', 'text-[#0F0F0F]'));
+            
+            const activeBtn = document.getElementById(`cat-${category}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-[#C9A962]', 'text-[#0F0F0F]');
+            } else {
+                document.getElementById('cat-all').classList.add('active', 'bg-[#C9A962]', 'text-[#0F0F0F]');
+            }
+            
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            let filtered = menuData;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(d => 
+                    d.name.toLowerCase().includes(searchTerm) || d.desc.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (category !== 'all') filtered = filtered.filter(d => d.category === category);
+            if (currentDietFilter) filtered = filtered.filter(d => d.tags && d.tags.includes(currentDietFilter));
+            
+            renderMenu(filtered);
+        }
+
+        function toggleDietFilter(diet) {
+            const btn = document.getElementById(`filter-${diet === 'vegetariano' ? 'veg' : 'gf'}`);
+            
+            if (currentDietFilter === diet) {
+                currentDietFilter = null;
+                btn.classList.remove('!bg-emerald-900/30', '!border-emerald-400/60', 'text-emerald-300');
+            } else {
+                // Deselect other
+                document.getElementById('filter-veg').classList.remove('!bg-emerald-900/30', '!border-emerald-400/60', 'text-emerald-300');
+                document.getElementById('filter-gf').classList.remove('!bg-emerald-900/30', '!border-emerald-400/60', 'text-emerald-300');
+                
+                currentDietFilter = diet;
+                btn.classList.add('!bg-emerald-900/30', '!border-emerald-400/60', 'text-emerald-300');
+            }
+            
+            // Re-render with current filters
+            filterMenu();
+        }
+
+        // Show dish detail modal
+        function showDishDetail(dishId) {
+            const dish = menuData.find(d => d.id === dishId);
+            if (!dish) return;
+            
+            currentDishForCart = dish;
+            
+            document.getElementById('detail-name').textContent = dish.name;
+            document.getElementById('detail-desc').textContent = dish.desc;
+            document.getElementById('detail-price').innerHTML = `€${dish.price}`;
+            document.getElementById('detail-category').textContent = dish.category.toUpperCase();
+            document.getElementById('detail-time').innerHTML = `${dish.time} min di preparazione`;
+            
+            const allergensEl = document.getElementById('detail-allergens');
+            allergensEl.innerHTML = dish.allergens ? 
+                `<i class="fa-solid fa-info-circle mr-1.5 text-[#C9A962]"></i> ${dish.allergens}` : 
+                `<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Nessun allergene principale`;
+            
+            // Image
+            const imgContainer = document.getElementById('detail-image-container');
+            imgContainer.innerHTML = `
+                <img src="${dish.img}" class="w-full h-full object-cover" alt="${dish.name}">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/60"></div>
+            `;
+            
+            document.getElementById('dish-detail-modal').classList.remove('hidden');
+            document.getElementById('dish-detail-modal').classList.add('flex');
+        }
+
+        function closeDishDetail() {
+            const modal = document.getElementById('dish-detail-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            currentDishForCart = null;
+        }
+
+        // Add to cart from detail (uses the improved addToOrder)
+        function addCurrentDishToCart() {
+            if (!currentDishForCart) return;
+            
+            addToOrder(currentDishForCart.id);
+            // Only close if we successfully added (i.e. table was already selected)
+            if (currentTable) {
+                closeDishDetail();
+            }
+        }
+
+        // Initialize menu
+        function initializeMenu() {
+            renderMenu();
+            
+            // Set initial active category
+            const allBtn = document.getElementById('cat-all');
+            if (allBtn) allBtn.classList.add('active', 'bg-[#C9A962]', 'text-[#0F0F0F]');
+            
+            // Search listener already inline
+            // Bonus: keyboard support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    const search = document.getElementById('search-input');
+                    if (search) search.focus();
+                }
+            });
+        }
+
+        // ========== ORDERING SYSTEM ==========
+
+        function openOrderingModal(preselectedTable = null) {
+            const modal = document.getElementById('ordering-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            if (preselectedTable) {
+                selectTable(preselectedTable);
+            } else if (!currentTable) {
+                showTableSelection();
+            } else {
+                // Already have a table — show menu directly
+                showOrderingMenu();
+            }
+        }
+
+        function closeOrderingModal() {
+            const modal = document.getElementById('ordering-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            
+            // Optional: keep currentTable for quick re-open
+        }
+
+        function showTableSelection() {
+            const menuArea = document.getElementById('ordering-menu-area');
+            const headerInfo = document.getElementById('modal-table-info');
+            
+            headerInfo.innerHTML = `
+                <div>
+                    <span class="text-xs tracking-[2px] text-[#C9A962]">SELEZIONA IL TUO TAVOLO</span>
+                </div>
+            `;
+            
+            menuArea.innerHTML = `
+                <div class="mb-6">
+                    <p class="text-[#A3A3A3]">In un ristorante reale scannerizzeresti il QR code sul tuo tavolo.<br>Qui puoi simulare la selezione.</p>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    ${Array.from({length: 10}, (_, i) => i + 1).map(tableNum => {
+                        const hasOrder = orders[tableNum] && orders[tableNum].items && orders[tableNum].items.length > 0;
+                        return `
+                            <div onclick="selectTable(${tableNum})" 
+                                 class="table-card cursor-pointer border ${hasOrder ? 'border-[#C9A962]/40 bg-[#C9A962]/5' : 'border-white/10'} hover:border-[#C9A962] bg-[#111] rounded-2xl p-5 flex flex-col items-center justify-center text-center active:scale-[0.985] transition-all">
+                                <div class="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center mb-3">
+                                    <i class="fa-solid fa-chair text-3xl text-[#C9A962]"></i>
+                                </div>
+                                <div class="font-mono text-3xl font-semibold tracking-tighter">Tavolo ${tableNum}</div>
+                                <div class="text-[10px] mt-1 ${hasOrder ? 'text-[#C9A962]' : 'text-[#666]'}">
+                                    ${hasOrder ? 'Ordine attivo' : 'Disponibile'}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div class="mt-8 text-xs text-center text-[#555]">
+                    Architettura scalabile: 10 tavoli normalizzati • Facilmente estendibile a 100+
+                </div>
+            `;
+            
+            // Hide cart sidebar when selecting table
+            document.querySelector('#ordering-modal .lg\\:w-96').style.display = 'none';
+        }
+
+        function selectTable(tableNumber) {
+            currentTable = tableNumber;
+            
+            // Show the menu + cart UI
+            showOrderingMenu();
+            
+            // Show nice toast
+            showToast(`Benvenuto al Tavolo ${tableNumber}`, 'success');
+        }
+
+        function showOrderingMenu() {
+            const menuArea = document.getElementById('ordering-menu-area');
+            const headerInfo = document.getElementById('modal-table-info');
+            const cartSidebar = document.querySelector('#ordering-modal .lg\\:w-96');
+            
+            cartSidebar.style.display = 'flex';
+            
+            // Header
+            headerInfo.innerHTML = `
+                <div class="flex items-center gap-x-3">
+                    <div class="px-4 py-1.5 bg-[#C9A962] text-[#0F0F0F] rounded-2xl text-sm font-mono font-bold flex items-center">
+                        TAVOLO ${currentTable}
+                    </div>
+                    <div>
+                        <div class="text-xs text-[#C9A962]">ORDINE IN CORSO</div>
+                    </div>
+                </div>
+            `;
+            
+            // Render the full menu inside modal (reuses same data but different cards)
+            menuArea.innerHTML = `
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <div class="font-semibold text-2xl tracking-tight">Menu • Tavolo ${currentTable}</div>
+                        <div class="text-xs text-[#777]">Tocchiamo per aggiungere • Tocca l'immagine per dettagli</div>
+                    </div>
+                </div>
+                
+                <div id="modal-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[58vh] overflow-y-auto pr-2 menu-grid"></div>
+            `;
+            
+            renderModalMenu();
+            updateCartUI();
+        }
+
+        function renderModalMenu(filtered = null) {
+            const grid = document.getElementById('modal-menu-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            let data = filtered || menuData;
+            
+            data.forEach(dish => {
+                const existingItem = currentTable && orders[currentTable] && orders[currentTable].items 
+                    ? orders[currentTable].items.find(i => i.id === dish.id) 
+                    : null;
+                const qtyInCart = existingItem ? existingItem.qty : 0;
+                
+                // Nice dietary badges for modal
+                let modalDietary = '';
+                if (dish.tags && dish.tags.length > 0) {
+                    modalDietary = '<div class="flex gap-1 mt-1">';
+                    dish.tags.forEach(tag => {
+                        if (tag === 'vegetariano') modalDietary += `<span class="text-[9px] px-2 py-px bg-emerald-900/50 text-emerald-300 rounded">Vegetariana</span>`;
+                        if (tag === 'glutenfree') modalDietary += `<span class="text-[9px] px-2 py-px bg-amber-900/50 text-amber-300 rounded">Gluten Free</span>`;
+                        if (tag === 'vegana') modalDietary += `<span class="text-[9px] px-2 py-px bg-green-900/50 text-green-300 rounded">Vegana</span>`;
+                    });
+                    modalDietary += '</div>';
+                }
+                
+                const cardHTML = `
+                    <div class="group bg-[#111] border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden flex flex-col cursor-pointer transition-all active:scale-[0.985]">
+                        <div class="relative h-40">
+                            <img src="${dish.img}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700" alt="${dish.name}">
+                            
+                            <div class="absolute top-3 right-3 px-3 py-px bg-black/80 text-xs font-mono font-semibold rounded-xl border border-white/10">€${dish.price}</div>
+                            
+                            ${qtyInCart > 0 ? `
+                                <div class="absolute top-3 left-3 bg-[#C9A962] text-[#0F0F0F] text-[10px] font-bold px-2.5 py-px rounded-full flex items-center">
+                                    ${qtyInCart} nel carrello
+                                </div>` : ''}
+                        </div>
+                        
+                        <div class="p-4 flex-1 flex flex-col">
+                            <div>
+                                <div class="uppercase text-[#C9A962] text-[10px] tracking-[1.5px]">${dish.category}</div>
+                                <div class="font-semibold tracking-tight text-lg leading-tight mt-px">${dish.name}</div>
+                                ${modalDietary}
+                            </div>
+                            
+                            <div class="flex-1"></div>
+                            
+                            <div class="flex items-center justify-between mt-auto pt-4">
+                                <div class="text-xs text-[#777] flex items-center">
+                                    <i class="fa-regular fa-clock mr-1"></i> ${dish.time} min
+                                </div>
+                                
+                                <div class="flex items-center gap-x-2">
+                                    <button onclick="event.stopImmediatePropagation(); showDishDetailFromModal(${dish.id});" 
+                                            class="text-xs border border-white/20 px-4 py-1.5 rounded-2xl hover:bg-white/5 active:bg-white/10 transition">
+                                        Info
+                                    </button>
+                                    
+                                    <button onclick="event.stopImmediatePropagation(); addToOrder(${dish.id});" 
+                                            class="text-xs bg-white text-[#0F0F0F] hover:bg-[#C9A962] active:bg-[#B38B4D] px-5 py-1.5 font-semibold rounded-2xl transition flex items-center gap-x-1.5">
+                                        <span>+ Aggiungi</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                const card = document.createElement('div');
+                card.innerHTML = cardHTML.trim();
+                
+                // Main card click = detail (but not on buttons)
+                card.firstElementChild.onclick = (e) => {
+                    if (!e.target.closest('button')) {
+                        showDishDetailFromModal(dish.id);
+                    }
+                };
+                
+                grid.appendChild(card.firstElementChild);
+            });
+        }
+
+        function filterModalMenu() {
+            const term = document.getElementById('modal-search').value.toLowerCase().trim();
+            const grid = document.getElementById('modal-menu-grid');
+            if (!grid) return;
+            
+            let filtered = menuData;
+            if (term.length > 0) {
+                filtered = filtered.filter(d => 
+                    d.name.toLowerCase().includes(term) || 
+                    d.desc.toLowerCase().includes(term)
+                );
+            }
+            renderModalMenu(filtered);
+        }
+
+        function showDishDetailFromModal(dishId) {
+            // Close current modal temporarily? Or just show detail on top
+            const detailModal = document.getElementById('dish-detail-modal');
+            // We can show it on top of ordering modal
+            showDishDetail(dishId);
+        }
+
+        // Core: Add item to current table order (robust version)
+        function addToOrder(dishId) {
+            const dish = menuData.find(d => d.id === dishId);
+            if (!dish) return;
+
+            // If no table selected yet, open the ordering flow first
+            if (!currentTable) {
+                showToast("Scegli prima il tuo tavolo", "success");
+                // Close detail if open
+                const detail = document.getElementById('dish-detail-modal');
+                if (detail) {
+                    detail.classList.remove('flex');
+                    detail.classList.add('hidden');
+                }
+                openOrderingModal(); // user will choose table then can add again
+                return;
+            }
+            
+            if (!orders[currentTable]) {
+                orders[currentTable] = { items: [], timestamp: Date.now(), status: 'draft' };
+            }
+            
+            const existingIndex = orders[currentTable].items.findIndex(item => item.id === dishId);
+            
+            if (existingIndex > -1) {
+                orders[currentTable].items[existingIndex].qty = (orders[currentTable].items[existingIndex].qty || 1) + 1;
+            } else {
+                orders[currentTable].items.push({ id: dishId, qty: 1, note: '' });
+            }
+            
+            saveState();
+            updateCartUI();
+            updateOrderCountBadge();
+            
+            // Nice feedback
+            showToast(`✓ ${dish.name} aggiunto al carrello`, 'success');
+            
+            // Refresh the modal grid so it shows "X nel carrello"
+            const modalGrid = document.getElementById('modal-menu-grid');
+            if (modalGrid) {
+                renderModalMenu();
+            }
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const timeEl = document.getElementById('estimated-time');
+            const emptyState = document.getElementById('cart-empty-state');
+            const submitBtn = document.getElementById('submit-order-btn');
+            
+            if (!currentTable || !orders[currentTable] || !orders[currentTable].items || orders[currentTable].items.length === 0) {
+                container.innerHTML = `
+                    <div id="cart-empty-state" class="h-full flex flex-col items-center justify-center text-center py-10">
+                        <i class="fa-solid fa-shopping-bag text-4xl text-white/10 mb-3"></i>
+                        <p class="text-[#666] text-sm">Il carrello è vuoto.<br>Aggiungi piatti dal menu a sinistra.</p>
+                    </div>
+                `;
+                totalEl.textContent = '€ 0';
+                timeEl.textContent = '—';
+                if (submitBtn) submitBtn.disabled = true;
+                return;
+            }
+            
+            if (emptyState) emptyState.remove();
+            
+            let html = '';
+            let total = 0;
+            let maxTime = 0;
+            
+            orders[currentTable].items.forEach((orderItem, idx) => {
+                const dish = menuData.find(d => d.id === orderItem.id);
+                if (!dish) return;
+                
+                const itemTotal = dish.price * (orderItem.qty || 1);
+                total += itemTotal;
+                maxTime = Math.max(maxTime, dish.time);
+                
+                html += `
+                    <div class="cart-item bg-[#181818] border border-white/5 rounded-2xl p-4 flex gap-4">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between">
+                                <div class="font-medium pr-2">${dish.name}</div>
+                                <div class="font-mono text-sm whitespace-nowrap">€${itemTotal}</div>
+                            </div>
+                            
+                            <div class="flex items-center gap-x-3 mt-3">
+                                <div class="flex items-center border border-white/10 rounded-2xl">
+                                    <button onclick="changeQty(${idx}, -1)" class="px-3 py-1 text-lg leading-none text-[#C9A962] active:bg-white/5 rounded-l-2xl">-</button>
+                                    <div class="px-3 font-mono tabular-nums">${orderItem.qty || 1}</div>
+                                    <button onclick="changeQty(${idx}, 1)" class="px-3 py-1 text-lg leading-none text-[#C9A962] active:bg-white/5 rounded-r-2xl">+</button>
+                                </div>
+                                
+                                <button onclick="removeFromOrder(${idx})" class="text-red-400/70 hover:text-red-400 px-2 text-xs flex items-center gap-1">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            
+                            ${orderItem.note ? `<div class="text-xs italic text-[#777] mt-1">"${orderItem.note}"</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            totalEl.innerHTML = `€ ${total}`;
+            timeEl.innerHTML = `${maxTime} min`;
+            
+            if (submitBtn) submitBtn.disabled = false;
+            
+            // Update badge
+            updateOrderCountBadge();
+        }
+
+        function changeQty(index, delta) {
+            if (!currentTable || !orders[currentTable]) return;
+            
+            const item = orders[currentTable].items[index];
+            if (!item) return;
+            
+            item.qty = (item.qty || 1) + delta;
+            
+            if (item.qty < 1) item.qty = 1;
+            
+            saveState();
+            updateCartUI();
+        }
+
+        function removeFromOrder(index) {
+            if (!currentTable || !orders[currentTable]) return;
+            
+            orders[currentTable].items.splice(index, 1);
+            
+            if (orders[currentTable].items.length === 0) {
+                delete orders[currentTable];
+            }
+            
+            saveState();
+            updateCartUI();
+            
+            // Refresh modal grid
+            const modalGrid = document.getElementById('modal-menu-grid');
+            if (modalGrid) renderModalMenu();
+        }
+
+        function clearCurrentOrder() {
+            if (!currentTable || !orders[currentTable]) return;
+            
+            if (confirm('Vuoi davvero svuotare tutto l\'ordine?')) {
+                delete orders[currentTable];
+                saveState();
+                updateCartUI();
+                
+                const modalGrid = document.getElementById('modal-menu-grid');
+                if (modalGrid) renderModalMenu();
+            }
+        }
+
+        function updateOrderCountBadge() {
+            const badge = document.getElementById('order-count-badge');
+            if (!badge || !currentTable || !orders[currentTable]) {
+                if (badge) badge.textContent = '0';
+                return;
+            }
+            
+            const count = orders[currentTable].items.reduce((sum, i) => sum + (i.qty || 1), 0);
+            badge.textContent = count;
+        }
+
+        // Submit order to "kitchen"
+        function submitOrder() {
+            if (!currentTable || !orders[currentTable] || orders[currentTable].items.length === 0) return;
+            
+            const order = orders[currentTable];
+            order.status = 'pending';
+            order.submittedAt = Date.now();
+            
+            saveState();
+            
+            // Beautiful success animation
+            const submitBtn = document.getElementById('submit-order-btn');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> ORDINE INVIATO!`;
+            submitBtn.disabled = true;
+            submitBtn.style.background = '#22c55e';
+            
+            showToast(`Ordine inviato alla cucina dal Tavolo ${currentTable}!`, 'success');
+            
+            // Simulate kitchen receiving it
+            setTimeout(() => {
+                // Update kitchen dashboard if open
+                const kitchenModal = document.getElementById('kitchen-dashboard');
+                if (kitchenModal && !kitchenModal.classList.contains('hidden')) {
+                    renderKitchenDashboard();
+                }
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.background = '';
+                submitBtn.disabled = false;
+                
+                // Optional: close modal after success or keep open
+                // For better UX keep open so user can add more
+                showToast('La cucina ha ricevuto il tuo ordine. Tempo stimato: 18-25 minuti.', 'success');
+            }, 1450);
+        }
+
+        // ========== KITCHEN DASHBOARD (Staff view) ==========
+        function openKitchenDashboard() {
+            let kitchenModal = document.getElementById('kitchen-dashboard');
+            
+            if (!kitchenModal) {
+                kitchenModal = document.createElement('div');
+                kitchenModal.id = 'kitchen-dashboard';
+                kitchenModal.className = `fixed inset-0 bg-black/95 z-[85] flex items-center justify-center p-4`;
+                kitchenModal.innerHTML = `
+                    <div class="bg-[#111] border border-white/10 w-full max-w-5xl max-h-[90dvh] rounded-3xl overflow-hidden flex flex-col">
+                        <div class="px-8 py-5 border-b border-white/10 flex justify-between items-center bg-[#0A0A0A]">
+                            <div>
+                                <span class="font-semibold text-xl">Vista Cucina • Live</span>
+                                <span class="ml-3 text-xs px-3 py-1 bg-red-500/10 text-red-400 rounded-2xl">REAL-TIME</span>
+                            </div>
+                            <button onclick="document.getElementById('kitchen-dashboard').remove()" class="text-xl px-4">×</button>
+                        </div>
+                        
+                        <div class="p-8 flex-1 overflow-auto" id="kitchen-content">
+                            <!-- Populated by renderKitchenDashboard -->
+                        </div>
+                        
+                        <div class="p-5 border-t border-white/10 text-xs text-[#666] flex justify-between items-center px-8">
+                            <div>10 tavoli normalizzati • Dati in memoria locale (scalabile a database)</div>
+                            <button onclick="clearAllOrders()" class="text-red-400 hover:text-red-500 text-xs">RESETTA TUTTI GLI ORDINI (demo)</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(kitchenModal);
+            } else {
+                kitchenModal.style.display = 'flex';
+            }
+            
+            renderKitchenDashboard();
+        }
+
+        function renderKitchenDashboard() {
+            const content = document.getElementById('kitchen-content');
+            if (!content) return;
+            
+            const activeTables = Object.keys(orders).filter(t => orders[t] && orders[t].items && orders[t].items.length > 0);
+            
+            if (activeTables.length === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-16">
+                        <i class="fa-solid fa-utensils text-6xl text-white/10 mb-6"></i>
+                        <p class="text-xl text-[#555]">Nessun ordine attivo al momento.</p>
+                        <p class="text-sm mt-1 text-[#444]">Gli ordini appariranno qui in tempo reale quando i clienti invieranno.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
+            
+            activeTables.forEach(tableNum => {
+                const order = orders[tableNum];
+                const totalItems = order.items.reduce((s, i) => s + (i.qty || 1), 0);
+                
+                let itemsHTML = '';
+                let totalPrice = 0;
+                
+                order.items.forEach((item, idx) => {
+                    const dish = menuData.find(d => d.id === item.id);
+                    if (!dish) return;
+                    totalPrice += dish.price * (item.qty || 1);
+                    
+                    itemsHTML += `
+                        <div class="flex justify-between text-sm py-1.5 border-b border-white/5 last:border-none">
+                            <div class="flex-1 pr-4">${dish.name} <span class="font-mono text-xs text-[#666]">×${item.qty || 1}</span></div>
+                            <div class="font-mono">€${dish.price * (item.qty || 1)}</div>
+                        </div>
+                    `;
+                });
+                
+                const timeAgo = order.submittedAt ? Math.floor((Date.now() - order.submittedAt) / 60000) : null;
+                
+                html += `
+                    <div class="bg-[#181818] rounded-2xl p-5 border border-white/10">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-mono text-3xl font-bold tracking-tighter">Tavolo ${tableNum}</div>
+                                <div class="text-xs text-[#C9A962]">${order.status === 'pending' ? 'IN PREPARAZIONE' : 'BOZZA'}</div>
+                            </div>
+                            
+                            <div class="text-right">
+                                <div class="font-mono text-xl">€${totalPrice}</div>
+                                <div class="text-xs text-[#666]">${totalItems} portate</div>
+                            </div>
+                        </div>
+                        
+                        <div class="my-5 text-sm">
+                            ${itemsHTML}
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs">
+                            <div class="text-[#777]">
+                                ${timeAgo !== null ? `Inviato ${timeAgo} min fa` : 'Bozza in corso'}
+                            </div>
+                            
+                            <div>
+                                ${order.status === 'pending' ? 
+                                    `<button onclick="markOrderReady(${tableNum}, this)" class="px-4 py-1 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded-2xl text-xs text-white font-medium">SEGNA PRONTO</button>` : 
+                                    `<span class="px-3 py-px text-xs bg-white/10 rounded">In attesa invio</span>`}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            content.innerHTML = html;
+        }
+
+        function markOrderReady(tableNum, btnElement) {
+            if (!orders[tableNum]) return;
+            
+            orders[tableNum].status = 'ready';
+            saveState();
+            
+            btnElement.outerHTML = `<span class="px-4 py-1 text-xs bg-emerald-600 text-white rounded-2xl">PRONTO • In consegna</span>`;
+            
+            showToast(`Ordine del Tavolo ${tableNum} pronto!`, 'success');
+            
+            // If ordering modal is open for this table, update it
+            const orderingModal = document.getElementById('ordering-modal');
+            if (!orderingModal.classList.contains('hidden') && currentTable == tableNum) {
+                // Could add a banner but for simplicity just toast
+            }
+        }
+
+        function clearAllOrders() {
+            if (confirm('Resettare tutti gli ordini? (solo per demo)')) {
+                orders = {};
+                localStorage.removeItem('lumina_orders');
+                
+                const kitchen = document.getElementById('kitchen-dashboard');
+                if (kitchen) kitchen.remove();
+                
+                // If ordering open, refresh
+                const ordering = document.getElementById('ordering-modal');
+                if (!ordering.classList.contains('hidden') && currentTable) {
+                    updateCartUI();
+                }
+                
+                showToast('Tutti gli ordini sono stati resettati', 'success');
+            }
+        }
+
+        // ========== BOOKING ==========
+        function submitBooking(e) {
+            e.preventDefault();
+            
+            const btns = e.target.querySelectorAll('button');
+            const originalTexts = [];
+            
+            btns.forEach((b, i) => {
+                originalTexts[i] = b.innerHTML;
+                b.disabled = true;
+                if (b.type === 'submit') b.innerHTML = 'PRENOTAZIONE CONFERMATA ✓';
+            });
+            
+            setTimeout(() => {
+                const successHTML = `
+                    <div class="text-center py-4">
+                        <div class="mx-auto w-16 h-16 bg-emerald-500/10 text-emerald-400 flex items-center justify-center rounded-full mb-4">
+                            <i class="fa-solid fa-check text-4xl"></i>
+                        </div>
+                        <div class="font-semibold text-xl">Prenotazione confermata!</div>
+                        <p class="text-[#A3A3A3] mt-1 text-sm">Ti aspettiamo. Un promemoria è stato inviato via SMS.</p>
+                        
+                        <button onclick="document.getElementById('prenota').scrollIntoView({behavior:'smooth'}); this.closest('.bg-\\[\\#181818\\]').remove()" 
+                                class="mt-6 text-sm px-8 py-2.5 border border-white/20 rounded-2xl hover:bg-white/5">
+                            Chiudi
+                        </button>
+                    </div>
+                `;
+                
+                e.target.outerHTML = successHTML;
+            }, 1250);
+        }
+
+        // Toast system (Apple-like)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            
+            const toast = document.createElement('div');
+            toast.className = `premium-toast flex items-center gap-x-3 px-5 py-3.5 rounded-2xl shadow-2xl text-sm max-w-xs ${type === 'success' ? 'bg-[#181818] border border-white/10' : 'bg-red-950 border border-red-900'}`;
+            
+            toast.innerHTML = `
+                <div class="flex-1">${message}</div>
+                <button class="text-[#777] hover:text-white ml-2">×</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Auto dismiss
+            setTimeout(() => {
+                if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 4200);
+            
+            toast.querySelector('button').onclick = () => toast.remove();
+        }
+
+        // Navbar scroll effect
+        function initNavbar() {
+            const nav = document.getElementById('nav');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 40) {
+                    nav.classList.add('nav-scrolled');
+                } else {
+                    nav.classList.remove('nav-scrolled');
+                }
+            });
+        }
+
+        // Keyboard shortcuts
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.metaKey && e.key === 'k') {
+                    e.preventDefault();
+                    const modal = document.getElementById('ordering-modal');
+                    if (!modal.classList.contains('hidden')) {
+                        closeOrderingModal();
+                    } else {
+                        openOrderingModal();
+                    }
+                }
+            });
+            
+            // Easter egg: press "?" to open kitchen
+            document.addEventListener('keypress', (e) => {
+                if (e.key === '?') {
+                    const kitchen = document.getElementById('kitchen-dashboard');
+                    if (kitchen) {
+                        kitchen.remove();
+                    } else {
+                        openKitchenDashboard();
+                    }
+                }
+            });
+        }
+
+        // Initialize everything
+        function initializeApp() {
+            initializeTailwind();
+            loadPersistedState();
+            initializeMenu();
+            initNavbar();
+            initKeyboardShortcuts();
+            
+            // Demo tip (only once)
+            setTimeout(() => {
+                if (!localStorage.getItem('lumina_demo_tip_shown')) {
+                    // Optional: showToast("Suggerimento: Premi ⌘K per aprire velocemente l'ordine dal tavolo", "success");
+                    localStorage.setItem('lumina_demo_tip_shown', 'true');
+                }
+            }, 8500);
+            
+            // Make sure initial category button is styled
+            const allCat = document.getElementById('cat-all');
+            if (allCat) {
+                allCat.onclick = () => filterByCategory('all');
+            }
+            
+            // Bonus: Pre-populate one demo order for table 3 to show the system working
+            if (Object.keys(orders).length === 0) {
+                orders[3] = {
+                    items: [
+                        { id: 2, qty: 1, note: '' },
+                        { id: 5, qty: 2, note: 'Senza formaggio extra' }
+                    ],
+                    timestamp: Date.now() - 1000 * 60 * 4,
+                    status: 'pending',
+                    submittedAt: Date.now() - 1000 * 60 * 3
+                };
+                saveState();
+            }
+            
+            console.log('%c[LUMINA] Premium restaurant site initialized. Scalable order system ready.', 'color:#666');
+        }
+
+        // Boot app
+        window.onload = initializeApp;
+        
+        // Expose some functions for console debugging / extensibility (good practice)
+        window.LUMINA = {
+            addDemoOrder: (table) => { /* for future */ },
+            getOrders: () => orders,
+            resetAll: () => { orders = {}; localStorage.removeItem('lumina_orders'); location.reload(); }
+        };
+    </script>
+</body>
+</html>
